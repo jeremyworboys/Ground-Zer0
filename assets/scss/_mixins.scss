@@ -1,0 +1,141 @@
+
+/*------------------------------------*\
+    MIXINS
+\*------------------------------------*/
+
+/**
+ * Wider Than
+ *
+ * This mixin takes the names of predefined break-point and outputs a media
+ *   to apply to devices wider than that break-point.
+ *
+ * Break-points need to be defined as follows:
+ *   $bp-names: "narrow",  "medium",   "wide";
+ *   $bp-vals:  "30em",    "62.35em",  "90em";
+ *
+ * Usage example:
+ *   .class-name {
+ *        @include wider-than("narrow") {
+ *            font-size: 16px;
+ *        }
+ *   }
+ *
+ * Sample output:
+ *   @media all and (min-width: 30em) {
+ *       .class-name {
+ *           font-size: 16px;
+ *       }
+ *   }
+ *
+ * @param string The name of the break-point
+ * @content
+ */
+@mixin wider-than($name) {
+    @media all and (min-width: nth($bp-vals, index($bp-names, $name))) {
+        @content
+    }
+}
+
+
+
+
+/**
+ * Rem
+ *
+ * This mixin takes a property name and set of values and outputs the property
+ *   in rems with a fallback to pxs if the browser doesn't understand rems.
+ *
+ * A base font size needs to be defined as follows:
+ *   $basefont: 16px;
+ *
+ * Usage example:
+ *   .class-name {
+ *       @include rem("font-size", 1.25);
+ *       @include rem("margin", 1 2 1.25);
+ *   }
+ *
+ * Sample output:
+ *   .class-name {
+ *       font-size: 20px;
+ *       font-size: 1.25rem;
+ *       margin: 16px 32px 20px;
+ *       margin: 1rem 2rem 1.25rem;
+ *   }
+ *
+ * @param string The property to be defined
+ * @param values The values in rems.
+ * @see http://github.com/bitmanic/rem (reverse implementation)
+ */
+@mixin rem($property, $input-values) {
+    // Create empty lists that we can dump values into
+    $px-values: unquote("");
+    $rem-values: unquote("");
+    @each $value in $input-values {
+        // If the value is zero, return 0
+        @if $value == 0 {
+            $px-values: append($px-values, 0);
+            $rem-values: append($rem-values, 0);
+        }
+        // If the value doesn't have a unit, assume it is in rems
+        @else if unitless($value) {
+            $px-values: append($px-values, $value * $basefont);
+            $rem-values: append($rem-values, #{$value}rem);
+        }
+        // Otherwise it has a defined unit; respect that.
+        @else {
+            $px-values: append($px-values, $value);
+            $rem-values: append($rem-values, $value);
+        }
+    }
+    // Return the property and its list of converted values
+    #{$property}: $px-values;
+    #{$property}: $rem-values;
+}
+
+
+
+
+/**
+ * Input Placeholder
+ *
+ * This mixin takes content and applies it to prefixed placeholder selectors as
+ *   seperate declarations.
+ *
+ * Usage example:
+ *   input {
+ *       @include input-placeholder {
+ *           color: blue;
+ *       }
+ *   }
+ *
+ * Sample output:
+ *   input::-webkit-input-placeholder {
+ *       color: blue;
+ *   }
+ *   input:-moz-placeholder {
+ *       color: blue;
+ *   }
+ *   input:-ms-placeholder {
+ *       color: blue;
+ *   }
+ *   input.placeholder {
+ *       color: blue;
+ *   }
+ *
+ * @content
+ * @see http://beta.compass-style.org/reference/compass/css3/user_interface/#mixin-input-placeholder
+ */
+@mixin input-placeholder {
+    &::-webkit-input-placeholder {
+        @content;
+    }
+    &:-moz-placeholder {
+        @content;
+    }
+    &:-ms-input-placeholder {
+        @content;
+    }
+    &.palceholder {
+        @content;
+    }
+}
