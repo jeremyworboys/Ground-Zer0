@@ -15,8 +15,11 @@ audio:not([controls]) { display: none; }
     BASE
 \*------------------------------------*/
 
-html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; overflow-y: scroll }
+* { @include box-sizing(border-box); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; overflow-y: scroll; }
 body { margin: 0; font-size: $basefont; line-height: 1.5; }
+::-moz-selection { background: $hilight-color; color: #fff; @include text-shadow(none); }
+::selection      { background: $hilight-color; color: #fff; @include text-shadow(none); }
 
 
 
